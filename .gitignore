@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Runtime outputs (personal simulation results)
+sim_response*.txt
+
+# Azure deployment files containing subscription/resource IDs
+containerapp.json
+.azure/deploy.ps1
+
+# Misc
+azure_logs/

@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.env
+.venv
+venv
+.git
+.gitignore
+.DS_Store
+*.md
+node_modules
+.env.example

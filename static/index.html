@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Self Simulator — Decision Clarity Engine</title>
+    <!-- Chart.js for bar chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- jsPDF for PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            color-scheme: light;
+            /* Light Theme — Clean neutral base with green accent */
+            --bg-primary: #eafaf1;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F0F4F8;
+            --accent: #2E7D32;
+            --accent-light: #4CAF50;
+            --accent-glow: rgba(46, 125, 50, 0.12);
+            --text-primary: #1A1D26;
+            --text-secondary: #4A5568;
+            --text-muted: #A0AEC0;
+            --success: #2E7D32;
+            --warning: #F59E0B;
+            --danger: #DC2626;
+            --border: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --pro-bg: rgba(46, 125, 50, 0.06);
+            --con-bg: rgba(220, 38, 38, 0.06);
+            --pro-border: rgba(46, 125, 50, 0.25);
+            --con-border: rgba(220, 38, 38, 0.25);
+            /* 8 Card colors — vibrant & saturated */
+            --card1: #2E7D32;
+            --card1-light: #66BB6A;
+            --card1-glow: rgba(46, 125, 50, 0.07);
+            --card2: #1565C0;
+            --card2-light: #42A5F5;
+            --card2-glow: rgba(21, 101, 192, 0.07);
+            --card3: #00838F;
+            --card3-light: #26C6DA;
+            --card3-glow: rgba(0, 131, 143, 0.07);
+            --card4: #7B1FA2;
+            --card4-light: #AB47BC;
+            --card4-glow: rgba(123, 31, 162, 0.07);
+            --card5: #E65100;
+            --card5-light: #FF9800;
+            --card5-glow: rgba(230, 81, 0, 0.07);
+            --card6: #C2185B;
+            --card6-light: #EC407A;
+            --card6-glow: rgba(194, 24, 91, 0.07);
+            --card7: #4527A0;
+            --card7-light: #7E57C2;
+            --card7-glow: rgba(69, 39, 160, 0.07);
+            --card8: #00695C;
+            --card8-light: #26A69A;
+            --card8-glow: rgba(0, 105, 92, 0.07);
+
+            /* Inline Links */
+            --link-color: #1A1D26;
+            --link-bg: rgba(0, 0, 0, 0.05);
+            --link-bg-hover: rgba(0, 0, 0, 0.10);
+        }
+
+        body.dark-mode {
+            color-scheme: dark;
+            /* Dark Theme — Rich dark with green accent */
+            --bg-primary: #0F1117;
+            --bg-secondary: #1A1D28;
+            --bg-card: #1E2130;
+            --bg-card-hover: #262A3A;
+            --accent: #66BB6A;
+            --accent-light: #81C784;
+            --accent-glow: rgba(102, 187, 106, 0.18);
+            --text-primary: #E8ECF4;
+            --text-secondary: #A0AABB;
+            --text-muted: #606878;
+            --success: #66BB6A;
+            --warning: #FBC02D;
+            --danger: #EF5350;
+            --border: #2D3148;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --pro-bg: rgba(102, 187, 106, 0.1);
+            --con-bg: rgba(239, 83, 80, 0.1);
+            --pro-border: rgba(102, 187, 106, 0.3);
+            --con-border: rgba(239, 83, 80, 0.3);
+            
+            --link-color: #E8ECF4;
+            --link-bg: rgba(255, 255, 255, 0.08);
+            --link-bg-hover: rgba(255, 255, 255, 0.15);
+            /* 8 Card colors */
+            --card1: #66BB6A;
+            --card1-light: #81C784;
+            --card1-glow: rgba(102, 187, 106, 0.08);
+            --card2: #42A5F5;
+            --card2-light: #64B5F6;
+            --card2-glow: rgba(66, 165, 245, 0.08);
+            --card3: #26C6DA;
+            --card3-light: #4DD0E1;
+            --card3-glow: rgba(38, 198, 218, 0.08);
+            --card4: #AB47BC;
+            --card4-light: #CE93D8;
+            --card4-glow: rgba(171, 71, 188, 0.08);
+            --card5: #FFA726;
+            --card5-light: #FFB74D;
+            --card5-glow: rgba(255, 167, 38, 0.08);
+            --card6: #EC407A;
+            --card6-light: #F06292;
+            --card6-glow: rgba(236, 64, 122, 0.08);
+            --card7: #7E57C2;
+            --card7-light: #9575CD;
+            --card7-glow: rgba(126, 87, 194, 0.08);
+            --card8: #00897B;
+            --card8-light: #26A69A;
+            --card8-glow: rgba(0, 137, 123, 0.10);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .header, .container, .pipeline-toggle-btn, .progress-section, .pipeline-panel-overlay {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Header (with improved styling) ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 3.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+            transition: color 0.2s;
+        }
+
+        .header h1:hover {
+            color: var(--accent-light);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin: 0;
+        }
+
+        /* ── Container ───────────────────────────── */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 2.5rem 3rem;
+        }
+
+        /* ── Page Title Section ───────────────── */
+        .page-title {
+            margin-bottom: 1.8rem;
+        }
+
+        .page-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        /* ── Input Form (improved styling) ── */
+        .input-section {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 2.8rem 3rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.06);
+        }
+
+        .input-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.8rem;
+            color: var(--text-primary);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 0.35rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .form-group textarea,
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.95rem 1.2rem;
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-group textarea:hover,
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: var(--accent-light);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .form-group textarea:focus,
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: var(--bg-primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 2.2rem;
+            background: var(--accent);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: var(--accent-light);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── Pipeline Toggle Button ────────────── */
+        .pipeline-toggle-btn {
+            display: none;
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px 0 0 6px;
+            padding: 0.9rem 0.6rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+            transition: background 0.2s, right 0.3s;
+        }
+
+        .pipeline-toggle-btn:hover {
+            background: var(--accent-light);
+        }
+
+        .pipeline-toggle-btn.visible {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .pipeline-toggle-btn .toggle-icon {
+            font-size: 1rem;
+            writing-mode: horizontal-tb;
+        }
+
+        .pipeline-toggle-btn.panel-open {
+            right: 380px;
+        }
+
+        .pipeline-toggle-btn .step-counter {
+            writing-mode: horizontal-tb;
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── Side Panel Overlay ────────────────── */
+        .pipeline-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .pipeline-panel-overlay.active {
+            display: block;
+        }
+
+        /* ── Side Panel ──────────────────────────── */
+        .progress-section {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            padding: 1.5rem;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+        }
+
+        .progress-section.active {
+            right: 0;
+        }
+
+        .progress-section .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-section h2 {
+            font-size: 1.05rem;
+            color: var(--accent-light);
+            margin: 0;
+        }
+
+        .panel-close-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .panel-close-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .step-tracker {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step-item {
+            --step-color: var(--card2);
+            --step-color-light: var(--card2-light);
+            display: flex;
+            align-items: center;
+            gap: 1.4rem;
+            padding: 1.3rem 1.6rem;
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Assign unique colors to each step */
+        .step-item:nth-child(1) { --step-color: var(--card2); --step-color-light: var(--card2-light); }
+        .step-item:nth-child(2) { --step-color: var(--card4); --step-color-light: var(--card4-light); }
+        .step-item:nth-child(3) { --step-color: var(--card5); --step-color-light: var(--card5-light); }
+        .step-item:nth-child(4) { --step-color: var(--card6); --step-color-light: var(--card6-light); }
+        .step-item:nth-child(5) { --step-color: var(--card3); --step-color-light: var(--card3-light); }
+        .step-item:nth-child(6) { --step-color: var(--card7); --step-color-light: var(--card7-light); }
+
+        .step-item.running {
+            border-color: var(--step-color);
+            background: linear-gradient(135deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            transform: translateX(4px);
+        }
+
+        .step-item.completed {
+            border-color: var(--step-color);
+            background: linear-gradient(135deg, var(--bg-primary), rgba(0,0,0,0.01));
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .step-item.failed {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(229,57,53,0.04), rgba(229,57,53,0.02));
+            box-shadow: 0 2px 8px rgba(229,57,53,0.1);
+        }
+
+        .step-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+            background: var(--step-color);
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border: 2px solid var(--step-color-light);
+            font-weight: 700;
+        }
+
+        .step-item.running .step-icon {
+            background: var(--step-color);
+            color: #FFFFFF;
+            border: 2px solid var(--step-color-light);
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        }
+
+        .step-item.completed .step-icon {
+            background: var(--step-color);
+            color: #FFFFFF;
+            border: 2px solid var(--step-color-light);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
+        .step-item.failed .step-icon {
+            background: var(--danger);
+            color: #FFFFFF;
+            border: 2px solid #ef5350;
+            box-shadow: 0 3px 10px rgba(229,57,53,0.15);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,0.15), 0 0 0 0 rgba(0,0,0,0.1); }
+            50% { box-shadow: 0 4px 14px rgba(0,0,0,0.15), 0 0 0 8px transparent; }
+        }
+
+        .step-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .step-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--step-color);
+            letter-spacing: -0.01em;
+            margin-bottom: 0.35rem;
+        }
+
+        .step-message {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+
+        /* ── Results ─────────────────────────────── */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        /* Inline Source Links */
+        .inline-source {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85em;
+            background: var(--link-bg);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            border-bottom: none;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        .inline-source:hover {
+            background: var(--link-bg-hover);
+            color: var(--link-color);
+        }
+
+        .inline-source::before {
+            content: "\2197";
+            font-size: 0.7em;
+            margin-right: 0.2rem;
+        }
+
+        /* Data Sources Footer */
+        .data-sources-footer {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.6rem;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .data-sources-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-source-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .data-source-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        /* Key Insight — Prominent editorial quote style */
+        .insight-banner {
+            margin-bottom: 3rem;
+            padding: 2.5rem 3rem;
+            border: 1.5px solid rgba(46,160,223,0.18);
+            border-left: 5px solid var(--accent);
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .insight-banner h2 {
+            color: var(--accent);
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-banner h2::before {
+            content: "\2728";
+            font-size: 0.9rem;
+        }
+
+        .insight-banner .insight-text {
+            font-size: 1.18rem;
+            line-height: 1.85;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .insight-banner .thinking-prompt {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border);
+            line-height: 1.7;
+        }
+
+        /* ── Section Label ────────────────────── */
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-label::before,
+        .section-label::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+        }
+
+        /* ── Card Entrance Animation ────────────── */
+        @keyframes cardSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes listItemFadeIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes insightFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .results-section.active .insight-banner {
+            animation: insightFadeIn 0.5s ease-out both;
+        }
+
+        .results-section.active .timelines-section {
+            animation: cardSlideIn 0.5s ease-out both;
+            animation-delay: 0.25s;
+        }
+
+        .results-section.active .tradeoffs-section {
+            animation: cardSlideIn 0.5s ease-out both;
+            animation-delay: 0.45s;
+        }
+
+        /* Timeline column stagger */
+        .timelines-section.animated .timeline-column {
+            animation: timelineColIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .timelines-section.animated .timeline-column:nth-child(1) { animation-delay: 0.05s; }
+        .timelines-section.animated .timeline-column:nth-child(2) { animation-delay: 0.15s; }
+        .timelines-section.animated .timeline-column:nth-child(3) { animation-delay: 0.25s; }
+        .timelines-section.animated .timeline-column:nth-child(4) { animation-delay: 0.35s; }
+        .timelines-section.animated .timeline-column:nth-child(5) { animation-delay: 0.45s; }
+
+        /* Timeline item stagger within each column */
+        .timelines-section.animated .timeline-item {
+            animation: timelineItemIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .timelines-section.animated .timeline-column:nth-child(1) .timeline-item:nth-child(1) { animation-delay: 0.10s; }
+        .timelines-section.animated .timeline-column:nth-child(1) .timeline-item:nth-child(2) { animation-delay: 0.18s; }
+        .timelines-section.animated .timeline-column:nth-child(1) .timeline-item:nth-child(3) { animation-delay: 0.26s; }
+        .timelines-section.animated .timeline-column:nth-child(1) .timeline-item:nth-child(4) { animation-delay: 0.34s; }
+        .timelines-section.animated .timeline-column:nth-child(2) .timeline-item:nth-child(1) { animation-delay: 0.20s; }
+        .timelines-section.animated .timeline-column:nth-child(2) .timeline-item:nth-child(2) { animation-delay: 0.28s; }
+        .timelines-section.animated .timeline-column:nth-child(2) .timeline-item:nth-child(3) { animation-delay: 0.36s; }
+        .timelines-section.animated .timeline-column:nth-child(2) .timeline-item:nth-child(4) { animation-delay: 0.44s; }
+        .timelines-section.animated .timeline-column:nth-child(3) .timeline-item:nth-child(1) { animation-delay: 0.30s; }
+        .timelines-section.animated .timeline-column:nth-child(3) .timeline-item:nth-child(2) { animation-delay: 0.38s; }
+        .timelines-section.animated .timeline-column:nth-child(3) .timeline-item:nth-child(3) { animation-delay: 0.46s; }
+        .timelines-section.animated .timeline-column:nth-child(3) .timeline-item:nth-child(4) { animation-delay: 0.54s; }
+        .timelines-section.animated .timeline-column:nth-child(4) .timeline-item:nth-child(1) { animation-delay: 0.40s; }
+        .timelines-section.animated .timeline-column:nth-child(4) .timeline-item:nth-child(2) { animation-delay: 0.48s; }
+        .timelines-section.animated .timeline-column:nth-child(4) .timeline-item:nth-child(3) { animation-delay: 0.56s; }
+        .timelines-section.animated .timeline-column:nth-child(4) .timeline-item:nth-child(4) { animation-delay: 0.64s; }
+        .timelines-section.animated .timeline-column:nth-child(5) .timeline-item:nth-child(1) { animation-delay: 0.50s; }
+        .timelines-section.animated .timeline-column:nth-child(5) .timeline-item:nth-child(2) { animation-delay: 0.58s; }
+        .timelines-section.animated .timeline-column:nth-child(5) .timeline-item:nth-child(3) { animation-delay: 0.66s; }
+        .timelines-section.animated .timeline-column:nth-child(5) .timeline-item:nth-child(4) { animation-delay: 0.74s; }
+
+        @keyframes timelineColIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes timelineItemIn {
+            from { opacity: 0; transform: translateX(-14px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ══════════════════════════════════════════
+           CHOICE CARDS — Unique Design System
+           ══════════════════════════════════════════ */
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .choice-card {
+            --card-color: var(--card1);
+            --card-color-light: var(--card1-light);
+            --card-color-glow: var(--card1-glow);
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--card-color);
+        }
+
+        /* Per-card color assignment (8 colors) - skipping green */
+        .choice-card:nth-child(1) { --card-color: var(--card2); --card-color-light: var(--card2-light); --card-color-glow: var(--card2-glow); }
+        .choice-card:nth-child(2) { --card-color: var(--card3); --card-color-light: var(--card3-light); --card-color-glow: var(--card3-glow); }
+        .choice-card:nth-child(3) { --card-color: var(--card4); --card-color-light: var(--card4-light); --card-color-glow: var(--card4-glow); }
+        .choice-card:nth-child(4) { --card-color: var(--card5); --card-color-light: var(--card5-light); --card-color-glow: var(--card5-glow); }
+        .choice-card:nth-child(5) { --card-color: var(--card6); --card-color-light: var(--card6-light); --card-color-glow: var(--card6-glow); }
+        .choice-card:nth-child(6) { --card-color: var(--card7); --card-color-light: var(--card7-light); --card-color-glow: var(--card7-glow); }
+        .choice-card:nth-child(7) { --card-color: var(--card8); --card-color-light: var(--card8-light); --card-color-glow: var(--card8-glow); }
+        .choice-card:nth-child(8) { --card-color: var(--card2); --card-color-light: var(--card2-light); --card-color-glow: var(--card2-glow); }
+
+        /* Static left accent bar - Removed for clean edge design */
+        .choice-card::before {
+            display: none;
+        }
+
+        .choice-card:hover {
+            border-color: var(--card-color);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.10), 0 0 0 1px var(--card-color-light);
+            transform: translateY(-4px);
+        }
+
+        /* ── Card Header Zone ────────────────────── */
+        .choice-card-top {
+            position: relative;
+            padding: 2rem 2rem 1.2rem;
+            background: transparent;
+        }
+
+        .choice-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+            gap: 1.2rem;
+        }
+
+        .choice-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--card-color);
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            border: 2px solid var(--card-color-light);
+            margin-top: 0.1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+        }
+
+        .choice-title-group {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .choice-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: var(--card-color);
+            letter-spacing: -0.01em;
+            line-height: 1.35;
+        }
+
+        /* ── Risk Badge ──────────────────────────── */
+        .risk-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .risk-badge.low {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+        .risk-badge.medium {
+            background: rgba(212, 180, 76, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(212, 180, 76, 0.2);
+        }
+        .risk-badge.high {
+            background: rgba(200, 90, 90, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(200, 90, 90, 0.2);
+        }
+
+        /* ── Collapsible Description ─────────────── */
+        .choice-description {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-top: 0.8rem;
+            position: relative;
+            background: transparent;
+        }
+
+        .choice-description.collapsed {
+            max-height: none;
+            overflow: visible;
+        }
+
+        .choice-description.collapsed::after {
+            display: none;
+        }
+
+        .desc-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--card-color-light);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.3rem 0;
+            margin-top: 0.2rem;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            transition: color 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .desc-toggle:hover {
+            color: #fff;
+        }
+
+        .desc-toggle.visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .desc-toggle::after {
+            content: "\\2193";
+            font-size: 0.7rem;
+            transition: transform 0.2s;
+        }
+
+        .desc-toggle.expanded::after {
+            transform: rotate(180deg);
+        }
+
+        /* ── Pros/Cons Tabs ──────────────────────── */
+        .pros-cons-wrapper {
+            border-top: 1px solid var(--border);
+            background: transparent;
+        }
+
+        .pros-cons-tabs {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0 2rem;
+            background: transparent;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pros-cons-tab {
+            flex: none;
+            padding: 1rem 0 0.8rem;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            border-radius: 0;
+        }
+
+        .pros-cons-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .pros-cons-tab.active {
+            background: transparent;
+            border-bottom: 2px solid var(--card-color);
+            color: var(--text-primary);
+            z-index: 1;
+        }
+
+        .pros-cons-tab.tab-pros.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--card-color);
+            box-shadow: none;
+        }
+
+        .pros-cons-tab.tab-cons {
+            color: var(--text-muted);
+        }
+
+        .pros-cons-tab.tab-cons.active {
+            color: var(--text-primary);
+            border-bottom-color: var(--danger);
+            box-shadow: none;
+        }
+
+        .pros-cons-tab .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            background: rgba(0,0,0,0.06);
+            font-size: 0.62rem;
+            margin-left: 0.4rem;
+            padding: 0 0.35rem;
+            transition: background 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .pros-cons-tab.tab-pros.active .tab-count {
+            background: var(--card-color-glow);
+            color: var(--card-color);
+        }
+
+        .pros-cons-tab.tab-cons.active .tab-count {
+            background: rgba(229, 57, 53, 0.15);
+            color: var(--danger);
+        }
+
+        .pros-cons-panel {
+            display: none;
+            padding: 1.5rem 2rem;
+            background: transparent;
+        }
+
+        .pros-cons-panel.active {
+            display: block;
+            animation: listItemFadeIn 0.3s ease-out;
+        }
+
+        .pros-cons-panel.panel-pros,
+        .pros-cons-panel.panel-cons {
+            background: transparent;
+        }
+
+        .pros-cons-panel ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .pros-cons-panel li {
+            font-size: 0.93rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.6rem;
+            list-style: none;
+            padding: 0.3rem 0.4rem 0.3rem 1.6rem;
+            position: relative;
+            line-height: 1.6;
+            border-radius: 4px;
+        }
+
+        .pros-cons-panel li:hover {
+            color: var(--text-primary);
+            background: rgba(0,0,0,0.02);
+        }
+
+        .pros-cons-panel li:last-child {
+            margin-bottom: 0;
+        }
+
+        .panel-pros li::before, .panel-cons li::before {
+            content: "";
+            position: absolute;
+            left: 0.3rem;
+            top: 0.75rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .panel-pros li::before { background: var(--success); }
+        .panel-cons li::before { background: var(--danger); }
+
+        .panel-pros li {
+            color: var(--success);
+        }
+
+        .panel-cons li {
+            color: var(--danger);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0 1.2rem 2rem;
+            border-left: 2px solid var(--border);
+            margin-left: 0.6rem;
+        }
+
+        .timeline-item:last-child {
+            border-left-color: transparent;
+            padding-bottom: 0.2rem;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 1.35rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--card-color);
+        }
+
+        .timeline-horizon {
+            font-weight: 700;
+            color: var(--card-color);
+            font-size: 0.78rem;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            background: var(--card-color-glow);
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .timeline-scenario {
+            font-size: 0.93rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            margin-top: 0.3rem;
+        }
+
+        .timeline-emotion {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 0.4rem;
+            opacity: 0.85;
+        }
+
+        .timeline-factors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+        }
+
+        .factor-tag {
+            font-size: 0.7rem;
+            background: var(--card-color-glow);
+            color: var(--card-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--card-color-light);
+        }
+
+        .confidence-note {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 0.65rem 1.4rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.4rem;
+            line-height: 1.6;
+        }
+
+        .confidence-note::before {
+            content: "";
+        }
+
+        /* Trade-offs Section */
+        .tradeoffs-section {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.06);
+        }
+
+        .tradeoffs-section h2 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+
+        #tradeoffsList {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+
+
+        .tradeoff-card {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tradeoff-section {
+            padding: 1.2rem 1.6rem 1.1rem 1.6rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .tradeoff-section:last-child {
+            border-bottom: none;
+        }
+        .tradeoff-gain.tradeoff-section {
+            border-left: 3px solid rgba(28,169,122,0.4);
+        }
+        .tradeoff-lose.tradeoff-section {
+            border-left: 3px solid rgba(225,76,76,0.35);
+        }
+        .tradeoff-section h4 {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.55rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .tradeoff-gain h4 { color: #1ca97a; }
+        .tradeoff-lose h4 { color: #e14c4c; }
+        .tradeoff-choices h4 { color: var(--accent-light); }
+        .tradeoff-section-content {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+
+        .tradeoff-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+            transform: translateY(-3px);
+            border-color: var(--accent-light);
+        }
+
+        .tradeoff-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, rgba(28,169,122,0.06) 0%, rgba(46,160,223,0.06) 100%);
+            border-bottom: 1.5px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tradeoff-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            letter-spacing: 0.01em;
+            flex: 1;
+            text-align: center;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tradeoff-tag-a {
+            background: rgba(28,169,122,0.12);
+            color: #1ca97a;
+            border: 1px solid rgba(28,169,122,0.25);
+        }
+
+        .tradeoff-tag-b {
+            background: rgba(225,76,76,0.08);
+            color: #e14c4c;
+            border: 1px solid rgba(225,76,76,0.2);
+        }
+
+        .tradeoff-tag-vs {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+
+
+        .tradeoff-side {
+            flex: 1 1 0;
+            padding: 2.2rem 2.1rem 2.2rem 2.1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        .tradeoff-gain {
+            background: none;
+        }
+        .tradeoff-lose {
+            background: none;
+        }
+
+
+        .tradeoff-side h4 {
+            font-size: 1.18rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 1.1rem;
+            font-weight: 900;
+            line-height: 1.1;
+            word-break: break-word;
+        }
+
+        .tradeoff-gain h4 {
+            color: #1ca97a;
+            text-shadow: 0 2px 12px rgba(28,169,122,0.10);
+        }
+        .tradeoff-lose h4 {
+            color: #e14c4c;
+            text-shadow: 0 2px 12px rgba(225,76,76,0.10);
+        }
+
+
+
+        .tradeoff-side p {
+            font-size: 1.08rem;
+            color: var(--text-secondary);
+            line-height: 1.85;
+            margin: 0;
+        }
+
+
+
+        .tradeoff-vs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 90px;
+            padding: 0 0.7rem;
+        }
+
+        .tradeoff-choices {
+            font-size: 1.01rem;
+            color: var(--accent-light);
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            margin-top: 0.3rem;
+            word-break: break-word;
+        }
+
+        .tradeoff-vs .vs-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            color: #fff;
+            background: linear-gradient(90deg, #1ca97a 0%, #e14c4c 100%);
+            border-radius: 999px;
+            padding: 0.22em 1.1em;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.7px;
+            margin: 0.7rem 0 0.7rem 0;
+            box-shadow: 0 1px 6px 0 rgba(60,60,60,0.10);
+            opacity: 0.97;
+        }
+
+        /* ── Timelines Section ────────────────────── */
+        .timelines-section {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.06);
+        }
+        .timelines-section h2 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+        .timelines-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .timelines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .timeline-column {
+            --card-color: var(--card1);
+            --card-color-light: var(--card1-light);
+            --card-color-glow: var(--card1-glow);
+        }
+        .timeline-column:nth-child(1) { --card-color: var(--card2); --card-color-light: var(--card2-light); --card-color-glow: var(--card2-glow); }
+        .timeline-column:nth-child(2) { --card-color: var(--card3); --card-color-light: var(--card3-light); --card-color-glow: var(--card3-glow); }
+        .timeline-column:nth-child(3) { --card-color: var(--card4); --card-color-light: var(--card4-light); --card-color-glow: var(--card4-glow); }
+        .timeline-column:nth-child(4) { --card-color: var(--card5); --card-color-light: var(--card5-light); --card-color-glow: var(--card5-glow); }
+        .timeline-column:nth-child(5) { --card-color: var(--card6); --card-color-light: var(--card6-light); --card-color-glow: var(--card6-glow); }
+        .timeline-column-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--card-color-light);
+        }
+        .timeline-col-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--card-color);
+            color: #fff;
+            font-size: 0.88rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .timeline-col-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+        .timeline-column-items {
+            padding-left: 0.2rem;
+        }
+
+        /* ── Error ─────────────────────────────── */
+        .error-banner {
+            display: none;
+            background: rgba(200, 90, 90, 0.08);
+            border: 1px solid var(--danger);
+            border-radius: 6px;
+            padding: 0.8rem 1.2rem;
+            color: var(--danger);
+            font-size: 0.88rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-banner.active {
+            display: block;
+        }
+
+        /* ── Responsive ──────────────────────────── */
+@media (max-width: 1100px) {
+            .choices-grid { grid-template-columns: 1fr; }
+            #tradeoffsList { grid-template-columns: 1fr; }
+            .timelines-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .header h1 { font-size: 1.1rem; }
+            .container { padding: 1.5rem 1.2rem; }
+            .hero-section { padding: 4rem 1.5rem 3rem; }
+            .hero-section h2 { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; padding: 0 1rem 3.5rem; gap: 1rem; }
+            .how-section { padding: 2.5rem 1rem 3.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .input-section { padding: 1.5rem; }
+            .timelines-grid { grid-template-columns: 1fr; }
+            .timelines-section { padding: 1.5rem; }
+        }
+
+        /* ── Spinner ─────────────────────────────── */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── New Simulation Button ───────────────── */
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.75rem 1.6rem;
+            background: transparent;
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+            border-radius: 10px;
+            font-size: 0.87rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+
+        .demo-badge {
+            display: inline-block;
+            padding: 0.35rem 0.95rem;
+            background: rgba(212, 180, 76, 0.1);
+            border: 1px solid rgba(212, 180, 76, 0.25);
+            color: var(--warning);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── Landing Page ───────────────────────── */
+        .landing-page {
+            min-height: calc(100vh - 56px);
+        }
+
+        .app-page {
+            display: none;
+        }
+
+        .app-page.active {
+            display: block;
+        }
+
+        .hero-section {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 8rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .hero-section h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-section h2 span {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            max-width: 460px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.6rem;
+            background: var(--accent);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.02rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            letter-spacing: -0.01em;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            background: var(--accent-light);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .features-grid {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 2.2rem 2rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .feature-card:nth-child(1) { border-top: 3px solid var(--card2); }
+        .feature-card:nth-child(2) { border-top: 3px solid var(--card4); }
+        .feature-card:nth-child(3) { border-top: 3px solid var(--card5); }
+
+        .feature-card:hover {
+            translate: 0 -6px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+            border-color: var(--border);
+        }
+
+        .feature-card .feature-num {
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.7rem;
+        }
+
+        .feature-card:nth-child(1) .feature-num { color: var(--card2); }
+        .feature-card:nth-child(2) .feature-num { color: var(--card4); }
+        .feature-card:nth-child(3) .feature-num { color: var(--card5); }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-card p {
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .how-section {
+            max-width: 620px;
+            margin: 0 auto;
+            padding: 3rem 2rem 5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .how-section h2 {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .how-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .how-step {
+            --step-color: var(--card2);
+            --step-color-light: var(--card2-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem 1.5rem;
+            transition: all 0.2s;
+            border: 1.5px solid transparent;
+            border-radius: 10px;
+        }
+
+        /* Unique colors for each step (no green) */
+        .how-step:nth-child(1) {
+            --step-color: var(--card2);  /* Blue */
+            --step-color-light: var(--card2-light);
+        }
+        .how-step:nth-child(2) {
+            --step-color: var(--card4);  /* Purple */
+            --step-color-light: var(--card4-light);
+        }
+        .how-step:nth-child(3) {
+            --step-color: var(--card5);  /* Orange */
+            --step-color-light: var(--card5-light);
+        }
+
+        .how-step:hover {
+            background: linear-gradient(135deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+            border-color: var(--step-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .how-step .step-num {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--step-color);
+            color: #FFFFFF;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            border: 3px solid var(--step-color-light);
+        }
+
+        .how-step-text h4 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .how-step-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .landing-footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-secondary);
+        }
+
+        .landing-footer p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .theme-toggle {
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border);
+            color: var(--accent);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            transform: scale(1.05);
+        }
+
+        .header-nav-link {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.35rem 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: border-color 0.15s, color 0.15s;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .header-nav-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Button Styles */
+        button, .primary-btn, .action-btn {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            outline: none;
+            border: none;
+        }
+
+        .primary-btn {
+            background: #338a36;
+            color: #fff;
+            border-radius: 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(51,138,54,0.10);
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            margin-bottom: 0;
+        }
+
+        .primary-btn:hover {
+            background: #256b28;
+            box-shadow: 0 4px 16px rgba(51,138,54,0.18);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .action-btn {
+            min-width: 280px;
+            max-width: 360px;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        #actionButtons {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section { padding: 3rem 1rem 2.5rem; }
+            .hero-section h2 { font-size: 1.7rem; }
+            .features-grid { grid-template-columns: 1fr; padding: 0 1rem 3rem; }
+            .how-section { padding: 2rem 1rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 onclick="showLanding()" style="cursor:pointer;">Future Self Simulator</h1>
+        <div class="header-nav">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+            <div class="demo-badge" id="demoBadge" style="display:none;">DEMO MODE</div>
+            <a href="#" class="header-nav-link" id="navStartBtn" onclick="showApp(); return false;">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <section class="hero-section">
+            <h2>Think through decisions<br><span>before you make them</span></h2>
+            <p class="hero-sub">An AI engine that maps your choices, projects outcomes across multiple timelines, and surfaces the trade-offs that matter.</p>
+            <a href="#" class="hero-cta" onclick="showApp(); return false;">Start a Simulation &rarr;</a>
+        </section>
+
+        <section class="features-grid">
+            <div class="feature-card">
+                <div class="feature-num">01</div>
+                <h3>Six-Step Analysis</h3>
+                <p>Research, choice generation, pros &amp; cons evaluation, timeline simulation, trade-off mapping, and insight synthesis.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">02</div>
+                <h3>Real-Time Data</h3>
+                <p>Pulls live information from Wikipedia, DuckDuckGo, HackerNews, GitHub, and other sources to ground analysis in current facts.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-num">03</div>
+                <h3>Timeline Projection</h3>
+                <p>See how each choice could play out at 6 months, 2 years, 5 years, and 10 years with emotional and practical factors.</p>
+            </div>
+        </section>
+
+        <section class="how-section">
+            <h2>How It Works</h2>
+            <div class="how-steps">
+                <div class="how-step">
+                    <div class="step-num">1</div>
+                    <div class="how-step-text">
+                        <h4>Describe Your Decision</h4>
+                        <p>Enter the decision you're facing and any relevant context — career, financial, personal, or otherwise.</p>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="step-num">2</div>
+                    <div class="how-step-text">
+                        <h4>AI Researches &amp; Analyzes</h4>
+                        <p>The engine searches live sources, generates realistic options, and evaluates each one across multiple dimensions.</p>
+                    </div>
+                </div>
+                <div class="how-step">
+                    <div class="step-num">3</div>
+                    <div class="how-step-text">
+                        <h4>Review Your Future</h4>
+                        <p>Get a structured breakdown of pros and cons, projected timelines, trade-off comparisons, and one key insight to guide you.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- <footer class="landing-footer">
+        </footer> -->
+    </div>
+
+    <!-- App Page -->
+    <div class="app-page" id="appPage">
+
+    <div class="container">
+
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner"></div>
+
+        <!-- Input Section -->
+        <div class="input-section" id="inputSection">
+            <h2>What decision are you reflecting on?</h2>
+            <form id="decisionForm">
+                <div class="form-group">
+                    <label for="decision">Your Decision</label>
+                    <textarea id="decision" rows="3"
+                        placeholder="e.g., Should I leave my stable corporate job to start my own company? Should I move to a different city for a new opportunity? Should I go back to school for a graduate degree?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="context">Additional Context (optional)</label>
+                    <textarea id="context" rows="3"
+                        placeholder="e.g., I'm 32, married with one child, have $50K in savings, working in software engineering for 8 years. My spouse works remotely and is supportive either way."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="numChoices">Number of Choices to Explore</label>
+                        <select id="numChoices">
+                            <option value="2">2 choices</option>
+                            <option value="3" selected>3 choices</option>
+                            <option value="4">4 choices</option>
+                            <option value="5">5 choices</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeHorizons">Time Horizons</label>
+                        <input id="timeHorizons" type="text" value="6 months, 2 years, 5 years, 10 years"
+                            placeholder="Comma-separated time horizons">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="submitBtn" style="width:100%; justify-content:center; margin-top:1.2rem; font-size:1rem; padding:1rem 2.2rem; letter-spacing:-0.01em;">
+                    Explore My Futures
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Pipeline Toggle Button -->
+    <button class="pipeline-toggle-btn" id="pipelineToggleBtn" onclick="togglePipelinePanel()">
+        <span class="toggle-icon">&#9881;&#65039;</span>
+        Analysis Pipeline
+        <span class="step-counter" id="stepCounterBadge">0/6</span>
+    </button>
+
+    <!-- Side Panel Overlay -->
+    <div class="pipeline-panel-overlay" id="pipelinePanelOverlay" onclick="closePipelinePanel()"></div>
+
+    <!-- Pipeline Side Panel -->
+    <div class="progress-section" id="progressSection">
+        <div class="panel-header">
+            <h2>&#9881;&#65039; Analysis Pipeline</h2>
+            <button class="panel-close-btn" onclick="closePipelinePanel()">&#10005;</button>
+        </div>
+        <div class="step-tracker" id="stepTracker">
+                <div class="step-item" id="step-research">
+                    <div class="step-icon">1</div>
+                    <div class="step-info">
+                        <div class="step-name">Real-Time Research</div>
+                        <div class="step-message">Searching for current data...</div>
+                    </div>
+                </div>
+                <div class="step-item" id="step-generate_choices">
+                    <div class="step-icon">2</div>
+                    <div class="step-info">
+                        <div class="step-name">Generate Choices</div>
+                        <div class="step-message">Identifying possible paths...</div>
+                    </div>
+                </div>
+                <div class="step-item" id="step-analyze_pros_cons">
+                    <div class="step-icon">3</div>
+                    <div class="step-info">
+                        <div class="step-name">Analyze Pros & Cons</div>
+                        <div class="step-message">Evaluating each option...</div>
+                    </div>
+                </div>
+                <div class="step-item" id="step-simulate_timelines">
+                    <div class="step-icon">4</div>
+                    <div class="step-info">
+                        <div class="step-name">Simulate Timelines</div>
+                        <div class="step-message">Projecting future outcomes...</div>
+                    </div>
+                </div>
+                <div class="step-item" id="step-compare_tradeoffs">
+                    <div class="step-icon">5</div>
+                    <div class="step-info">
+                        <div class="step-name">Compare Trade-offs</div>
+                        <div class="step-message">Mapping what you gain vs. lose...</div>
+                    </div>
+                </div>
+                <div class="step-item" id="step-synthesize_insight">
+                    <div class="step-icon">6</div>
+                    <div class="step-info">
+                        <div class="step-name">Synthesize Insight</div>
+                        <div class="step-message">Distilling the key takeaway...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="container">
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+
+            <!-- Key Insight -->
+            <div class="insight-banner" id="insightBanner">
+                <h2>Key Insight</h2>
+                <div class="insight-text" id="insightText"></div>
+                <div class="thinking-prompt" id="thinkingPrompt"></div>
+            </div>
+
+            <!-- Choices -->
+            <div class="section-label">Your Pathways</div>
+            <div class="choices-grid" id="choicesGrid"></div>
+
+            <!-- Timelines -->
+            <div class="timelines-section" id="timelinesSection"></div>
+
+            <!-- Trade-offs -->
+
+            <div class="tradeoffs-section" id="tradeoffsSection">
+                <h2>Trade-Off Map</h2>
+                <div id="tradeoffsList"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div id="actionButtons" style="display:none;">
+                <button id="runAnotherBtn" class="primary-btn action-btn" onclick="resetSimulation()">↻ Run Another Simulation</button>
+                <button id="downloadPdfBtn" class="primary-btn action-btn">⬇️ Download PDF Summary</button>
+            </div>
+
+            <!-- Data Sources Footer -->
+            <div class="data-sources-footer" id="dataSourcesFooter" style="display:none;">
+                <span class="data-sources-label">Analysis powered by real-time data from:</span>
+                <span id="dataSourceChips"></span>
+            </div>
+        </div>
+
+    </div>
+
+    </div><!-- /app-page -->
+
+    <script>
+        const form = document.getElementById('decisionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const inputSection = document.getElementById('inputSection');
+        const progressSection = document.getElementById('progressSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const errorBanner = document.getElementById('errorBanner');
+        const pipelineToggleBtn = document.getElementById('pipelineToggleBtn');
+        const pipelinePanelOverlay = document.getElementById('pipelinePanelOverlay');
+        let completedSteps = 0;
+        let pipelinePanelOpen = false;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const decision = document.getElementById('decision').value.trim();
+            if (!decision) {
+                showError('Please describe the decision you are facing.');
+                return;
+            }
+
+            const context = document.getElementById('context').value.trim();
+            const numChoices = parseInt(document.getElementById('numChoices').value);
+            const timeHorizons = document.getElementById('timeHorizons').value
+                .split(',').map(s => s.trim()).filter(Boolean);
+
+            hideError();
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Analyzing your options...';
+            resultsSection.classList.remove('active');
+            resetStepTracker();
+            completedSteps = 0;
+            updateStepCounter();
+            pipelineToggleBtn.classList.add('visible');
+            openPipelinePanel();
+
+            try {
+                const response = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        decision,
+                        context,
+                        num_choices: numChoices,
+                        time_horizons: timeHorizons,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Simulation failed');
+                }
+
+                // Process SSE stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (line.trim().startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(line.indexOf('data: ') + 6).trim());
+                                handleEvent(data);
+                            } catch (parseErr) {
+                                console.error('Failed to parse event:', line, parseErr);
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('API Error:', err);
+                showError(err.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Explore My Futures';
+            }
+        });
+
+        function handleEvent(event) {
+            if (event.type === 'step_update') {
+                updateStep(event.step, event.status, event.message);
+            } else if (event.type === 'result') {
+                renderResults(event.data);
+            }
+        }
+
+        function updateStep(stepName, status, message) {
+            const el = document.getElementById(`step-${stepName}`);
+            if (!el) return;
+
+            el.className = `step-item ${status}`;
+            const msgEl = el.querySelector('.step-message');
+            if (msgEl) msgEl.textContent = message;
+
+            const iconEl = el.querySelector('.step-icon');
+            if (status === 'running') {
+                iconEl.innerHTML = '<span class="spinner"></span>';
+            } else if (status === 'completed') {
+                iconEl.innerHTML = '&#10003;';
+                completedSteps++;
+                updateStepCounter();
+            } else if (status === 'failed') {
+                iconEl.innerHTML = '&#10007;';
+            }
+        }
+
+        function updateStepCounter() {
+            document.getElementById('stepCounterBadge').textContent = `${completedSteps}/6`;
+        }
+
+        function togglePipelinePanel() {
+            if (pipelinePanelOpen) {
+                closePipelinePanel();
+            } else {
+                openPipelinePanel();
+            }
+        }
+
+        function openPipelinePanel() {
+            progressSection.classList.add('active');
+            pipelinePanelOverlay.classList.add('active');
+            pipelineToggleBtn.classList.add('panel-open');
+            pipelinePanelOpen = true;
+        }
+
+        function closePipelinePanel() {
+            progressSection.classList.remove('active');
+            pipelinePanelOverlay.classList.remove('active');
+            pipelineToggleBtn.classList.remove('panel-open');
+            pipelinePanelOpen = false;
+        }
+
+        function renderText(text) {
+            // Escape HTML first, then convert markdown-style [text](url) into clickable links
+            let safe = escapeHtml(text);
+            // Match [link text](url) — supports https://, http://, and protocol-relative //
+            safe = safe.replace(
+                /\[([^\]]+)\]\(((?:https?:)?\/\/[^)]+)\)/g,
+                '<a class="inline-source" href="$2" target="_blank" rel="noopener">$1</a>'
+            );
+            return safe;
+        }
+
+        function renderResults(data) {
+            // Store data globally for PDF download
+            window.simulationData = data;
+
+            // Key insight (with inline source links)
+            document.getElementById('insightText').innerHTML = renderText(data.key_insight);
+            document.getElementById('thinkingPrompt').innerHTML = renderText(`"${data.thinking_prompt}"`);
+
+            // Choices
+            const grid = document.getElementById('choicesGrid');
+            grid.innerHTML = '';
+
+            data.choices.forEach((choice, idx) => {
+                const riskClass = choice.risk_level.toLowerCase();
+                const prosCount = choice.pros_cons.pros.length;
+                const consCount = choice.pros_cons.cons.length;
+                const card = document.createElement('div');
+                card.className = `choice-card risk-${riskClass}`;
+                card.innerHTML = `
+                    <div class="choice-card-top" data-index="${idx + 1}">
+                        <div class="choice-header">
+                            <span class="choice-number">${idx + 1}</span>
+                            <div class="choice-title-group">
+                                <div class="choice-title">${escapeHtml(choice.title)}</div>
+                            </div>
+                            <span class="risk-badge ${riskClass}">${escapeHtml(choice.risk_level)} Risk</span>
+                        </div>
+                        <div class="choice-description collapsed" id="desc-${idx}">${renderText(choice.description)}</div>
+                        <button class="desc-toggle" id="desc-toggle-${idx}" onclick="toggleDescription(${idx})">Show more</button>
+                    </div>
+                    <div class="pros-cons-wrapper">
+                        <div class="pros-cons-tabs">
+                            <button class="pros-cons-tab tab-pros active" onclick="switchTab(${idx}, 'pros')">
+                                Advantages <span class="tab-count">${prosCount}</span>
+                            </button>
+                            <button class="pros-cons-tab tab-cons" onclick="switchTab(${idx}, 'cons')">
+                                Drawbacks <span class="tab-count">${consCount}</span>
+                            </button>
+                        </div>
+                        <div class="pros-cons-panel panel-pros active" id="pros-panel-${idx}">
+                            <ul>${choice.pros_cons.pros.map(p => `<li>${renderText(p)}</li>`).join('')}</ul>
+                        </div>
+                        <div class="pros-cons-panel panel-cons" id="cons-panel-${idx}">
+                            <ul>${choice.pros_cons.cons.map(c => `<li>${renderText(c)}</li>`).join('')}</ul>
+                        </div>
+                    </div>
+                    <div class="confidence-note">${renderText(choice.confidence_note)}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // After rendering, check which descriptions need "Show more" toggle
+            requestAnimationFrame(() => {
+                data.choices.forEach((_, idx) => {
+                    const desc = document.getElementById(`desc-${idx}`);
+                    const toggle = document.getElementById(`desc-toggle-${idx}`);
+                    if (desc && toggle && desc.scrollHeight > desc.clientHeight + 4) {
+                        toggle.classList.add('visible');
+                    }
+                });
+            });
+
+            // Trade-offs
+            const tradeoffsList = document.getElementById('tradeoffsList');
+            tradeoffsList.innerHTML = '';
+
+            data.trade_offs.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'tradeoff-card';
+                card.innerHTML = `
+                    <div class="tradeoff-card-header">
+                        <span class="tradeoff-tag tradeoff-tag-a">${escapeHtml(t.choice_a)}</span>
+                        <span class="tradeoff-tag-vs">vs</span>
+                        <span class="tradeoff-tag tradeoff-tag-b">${escapeHtml(t.choice_b)}</span>
+                    </div>
+                    <div class="tradeoff-section tradeoff-gain">
+                        <h4>What You Gain</h4>
+                        <div class="tradeoff-section-content">${renderText(t.what_you_gain)}</div>
+                    </div>
+                    <div class="tradeoff-section tradeoff-lose">
+                        <h4>What You Lose</h4>
+                        <div class="tradeoff-section-content">${renderText(t.what_you_lose)}</div>
+                    </div>
+                `;
+                tradeoffsList.appendChild(card);
+            });
+
+
+            // Timelines Section
+            const timelinesSection = document.getElementById('timelinesSection');
+            timelinesSection.classList.remove('animated');
+            timelinesSection.innerHTML = '<h2>Future Timelines</h2><p class="timelines-subtitle">How each path unfolds across time</p><div class="timelines-grid">' +
+                data.choices.map((choice, idx) =>
+                    '<div class="timeline-column">' +
+                    '<div class="timeline-column-header"><span class="timeline-col-number">' + (idx+1) + '</span><span class="timeline-col-title">' + escapeHtml(choice.title) + '</span></div>' +
+                    '<div class="timeline-column-items">' +
+                    choice.timeline_outcomes.map(t =>
+                        '<div class="timeline-item">' +
+                        '<div class="timeline-horizon">' + escapeHtml(t.time_horizon) + '</div>' +
+                        '<div class="timeline-scenario">' + renderText(t.scenario) + '</div>' +
+                        '<div class="timeline-emotion">Emotional state: ' + renderText(t.emotional_state) + '</div>' +
+                        '<div class="timeline-factors">' +
+                        t.key_factors.map(f => '<span class="factor-tag">' + escapeHtml(f) + '</span>').join('') +
+                        '</div></div>'
+                    ).join('') +
+                    '</div></div>'
+                ).join('') +
+                '</div>';
+            // Always retrigger animation, even in demo mode
+            setTimeout(() => {
+                timelinesSection.classList.remove('animated');
+                void timelinesSection.offsetWidth;
+                timelinesSection.classList.add('animated');
+            }, 10);
+
+            // Show action buttons
+            document.getElementById('actionButtons').style.display = 'flex';
+
+            // Setup PDF download button
+            const pdfBtn = document.getElementById('downloadPdfBtn');
+            if (pdfBtn) {
+                pdfBtn.onclick = function() {
+                    const doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+                    let y = 50;
+                    const pageHeight = doc.internal.pageSize.height;
+                    const margin = 40;
+                    const maxWidth = 480;
+                    
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(20);
+                    doc.text('Future Self Simulator — Decision Summary', margin, y);
+                    y += 30;
+                    
+                    // Key Insight
+                    if (window.simulationData && window.simulationData.key_insight) {
+                        doc.setFontSize(14);
+                        doc.setTextColor(34, 167, 122);
+                        doc.text('Key Insight:', margin, y);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(11);
+                        doc.setTextColor(40,40,40);
+                        y += 16;
+                        const insightLines = doc.splitTextToSize(window.simulationData.key_insight, maxWidth);
+                        doc.text(insightLines, margin + 20, y);
+                        y += insightLines.length * 13 + 10;
+                        if (y > pageHeight - 100) { doc.addPage(); y = margin; }
+                    }
+                    
+                    // Thinking Prompt
+                    if (window.simulationData && window.simulationData.thinking_prompt) {
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(13);
+                        doc.setTextColor(60,60,60);
+                        doc.text('Thinking Prompt:', margin, y);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(11);
+                        doc.setTextColor(80,80,80);
+                        y += 14;
+                        const promptLines = doc.splitTextToSize(window.simulationData.thinking_prompt, maxWidth);
+                        doc.text(promptLines, margin + 20, y);
+                        y += promptLines.length * 13 + 12;
+                        if (y > pageHeight - 100) { doc.addPage(); y = margin; }
+                    }
+                    
+                    // Choices
+                    if (window.simulationData && window.simulationData.choices) {
+                        y += 20;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(15);
+                        doc.setTextColor(34, 167, 122);
+                        doc.text('Choices:', margin, y);
+                        y += 20;
+                        
+                        window.simulationData.choices.forEach((choice, idx) => {
+                            if (y > pageHeight - 80) { doc.addPage(); y = margin; }
+                            
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(12);
+                            doc.setTextColor(60,60,60);
+                            doc.text(`${idx+1}. ${choice.title} (${choice.risk_level} Risk)`, margin + 10, y);
+                            y += 14;
+                            
+                            // Description
+                            if (choice.description) {
+                                doc.setFont('helvetica', 'normal');
+                                doc.setFontSize(10);
+                                doc.setTextColor(40,40,40);
+                                const descLines = doc.splitTextToSize(choice.description, maxWidth - 40);
+                                doc.text(descLines, margin + 20, y);
+                                y += descLines.length * 12 + 6;
+                            }
+                            
+                            // Pros
+                            if (choice.pros_cons && choice.pros_cons.pros && choice.pros_cons.pros.length) {
+                                doc.setFont('helvetica', 'bold');
+                                doc.setFontSize(10);
+                                doc.setTextColor(34, 167, 122);
+                                doc.text('Advantages:', margin + 10, y);
+                                y += 10;
+                                doc.setFont('helvetica', 'normal');
+                                doc.setFontSize(10);
+                                doc.setTextColor(40,40,40);
+                                choice.pros_cons.pros.forEach(p => {
+                                    const pLines = doc.splitTextToSize('- ' + p, maxWidth - 60);
+                                    doc.text(pLines, margin + 30, y);
+                                    y += pLines.length * 11 + 2;
+                                });
+                            }
+                            
+                            // Cons
+                            if (choice.pros_cons && choice.pros_cons.cons && choice.pros_cons.cons.length) {
+                                doc.setFont('helvetica', 'bold');
+                                doc.setFontSize(10);
+                                doc.setTextColor(225, 76, 76);
+                                doc.text('Drawbacks:', margin + 10, y);
+                                y += 10;
+                                doc.setFont('helvetica', 'normal');
+                                doc.setFontSize(10);
+                                doc.setTextColor(40,40,40);
+                                choice.pros_cons.cons.forEach(c => {
+                                    const cLines = doc.splitTextToSize('- ' + c, maxWidth - 60);
+                                    doc.text(cLines, margin + 30, y);
+                                    y += cLines.length * 11 + 2;
+                                });
+                            }
+                            
+                            y += 8;
+                        });
+                    }
+                    
+                    // Trade-Offs
+                    if (window.simulationData && window.simulationData.trade_offs) {
+                        y += 20;
+                        if (y > pageHeight - 80) { doc.addPage(); y = margin; }
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(15);
+                        doc.setTextColor(34, 167, 122);
+                        doc.text('Trade-off Comparisons:', margin, y);
+                        y += 18;
+                        
+                        window.simulationData.trade_offs.forEach((t, i) => {
+                            if (y > pageHeight - 80) { doc.addPage(); y = margin; }
+                            
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(11);
+                            doc.setTextColor(60,60,60);
+                            doc.text(`${t.choice_a} vs ${t.choice_b}`, margin + 10, y);
+                            y += 12;
+                            
+                            // What You Gain
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(10);
+                            doc.setTextColor(34, 167, 122);
+                            doc.text('Gain:', margin + 20, y);
+                            y += 10;
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(10);
+                            doc.setTextColor(40,40,40);
+                            const gainLines = doc.splitTextToSize(t.what_you_gain, maxWidth - 60);
+                            doc.text(gainLines, margin + 30, y);
+                            y += gainLines.length * 11 + 6;
+                            
+                            // What You Lose
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(10);
+                            doc.setTextColor(225, 76, 76);
+                            doc.text('Lose:', margin + 20, y);
+                            y += 10;
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(10);
+                            doc.setTextColor(40,40,40);
+                            const loseLines = doc.splitTextToSize(t.what_you_lose, maxWidth - 60);
+                            doc.text(loseLines, margin + 30, y);
+                            y += loseLines.length * 11 + 10;
+                        });
+                    }
+                    
+                    // Data sources
+                    if (window.simulationData && window.simulationData.tools_invoked && window.simulationData.tools_invoked.length) {
+                        y += 10;
+                        if (y > pageHeight - 60) { doc.addPage(); y = margin; }
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(12);
+                        doc.setTextColor(60,60,60);
+                        doc.text('Data Sources:', margin, y);
+                        y += 12;
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.setTextColor(40,40,40);
+                        window.simulationData.tools_invoked.forEach(src => {
+                            doc.text('• ' + src, margin + 15, y);
+                            y += 10;
+                        });
+                    }
+                    doc.save('future-self-simulation-summary.pdf');
+                };
+            }
+
+            // Show/hide data sources footer
+            const footer = document.getElementById('dataSourcesFooter');
+            const chipsEl = document.getElementById('dataSourceChips');
+            if (data.tools_invoked && data.tools_invoked.length) {
+                footer.style.display = 'flex';
+                chipsEl.innerHTML = data.tools_invoked.map(t =>
+                    `<span class="data-source-chip"><span class="data-source-dot"></span>${escapeHtml(t)}</span>`
+                ).join('');
+            } else {
+                footer.style.display = 'none';
+            }
+
+            // Show results
+            resultsSection.classList.add('active');
+        }
+
+        function toggleDescription(idx) {
+            const desc = document.getElementById(`desc-${idx}`);
+            const toggle = document.getElementById(`desc-toggle-${idx}`);
+            if (desc.classList.contains('collapsed')) {
+                desc.classList.remove('collapsed');
+                toggle.textContent = 'Show less';
+                toggle.classList.add('expanded');
+            } else {
+                desc.classList.add('collapsed');
+                toggle.textContent = 'Show more';
+                toggle.classList.remove('expanded');
+            }
+        }
+
+        function switchTab(cardIdx, tab) {
+            const card = document.querySelectorAll('.choice-card')[cardIdx];
+            if (!card) return;
+            const tabs = card.querySelectorAll('.pros-cons-tab');
+            const panels = card.querySelectorAll('.pros-cons-panel');
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+            if (tab === 'pros') {
+                card.querySelector('.tab-pros').classList.add('active');
+                document.getElementById(`pros-panel-${cardIdx}`).classList.add('active');
+            } else {
+                card.querySelector('.tab-cons').classList.add('active');
+                document.getElementById(`cons-panel-${cardIdx}`).classList.add('active');
+            }
+        }
+
+        function resetStepTracker() {
+            const steps = ['research', 'generate_choices', 'analyze_pros_cons', 'simulate_timelines',
+                           'compare_tradeoffs', 'synthesize_insight'];
+            steps.forEach((s, i) => {
+                const el = document.getElementById(`step-${s}`);
+                el.className = 'step-item';
+                el.querySelector('.step-icon').textContent = i + 1;
+            });
+        }
+
+        function resetSimulation() {
+            closePipelinePanel();
+            pipelineToggleBtn.classList.remove('visible');
+            resultsSection.classList.remove('active');
+            document.getElementById('actionButtons').style.display = 'none';
+            resetStepTracker();
+            completedSteps = 0;
+            updateStepCounter();
+            window.simulationData = null;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showError(msg) {
+            errorBanner.textContent = msg;
+            errorBanner.classList.add('active');
+        }
+
+        function hideError() {
+            errorBanner.classList.remove('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showApp() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('appPage').classList.add('active');
+            document.getElementById('navStartBtn').style.display = 'none';
+            window.scrollTo(0, 0);
+        }
+
+        function showLanding() {
+            document.getElementById('landingPage').style.display = '';
+            document.getElementById('appPage').classList.remove('active');
+            document.getElementById('navStartBtn').style.display = '';
+            window.scrollTo(0, 0);
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeToggleButton();
+        }
+
+        function updateThemeToggleButton() {
+            const btn = document.getElementById('themeToggle');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️';
+                btn.title = 'Switch to light mode';
+            } else {
+                btn.textContent = '🌙';
+                btn.title = 'Switch to dark mode';
+            }
+        }
+
+        // Load saved theme preference on page load
+        (function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            updateThemeToggleButton();
+        })();
+
+        // Check if running in demo mode on load
+        (async function checkDemoMode() {
+            try {
+                const res = await fetch('/api/health');
+                const data = await res.json();
+                if (!data.azure_openai_configured) {
+                    document.getElementById('demoBadge').style.display = 'inline-block';
+                }
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+
+</body>
+</html>
