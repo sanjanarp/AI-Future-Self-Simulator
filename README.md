@@ -1,6 +1,6 @@
-# Future Self Simulator
+# AI Future Self Simulator
 
-An AI agent that helps you think through big life decisions — career moves, grad school, starting a business — by simulating how each choice could play out over time.
+An AI agent that helps you think through big life decisions like career moves, grad school, starting a business, etc. by simulating how each choice could play out over time.
 
 You describe a decision and some personal context. The agent researches current data (job markets, cost of living, etc.), generates distinct paths, analyzes pros/cons, projects future timelines, compares trade-offs, and distills a key insight. Results stream to your browser in real time.
 
@@ -18,7 +18,7 @@ You describe a decision and some personal context. The agent researches current 
 ```
 
 **Output** (streamed via SSE):
-- 3 distinct pathways with detailed pros/cons
+- 3 (modifiable) distinct pathways with detailed pros/cons
 - Vivid timeline projections at each horizon
 - Pairwise trade-off comparisons
 - A synthesized key insight and reflective question
